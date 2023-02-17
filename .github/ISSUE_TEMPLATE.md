@@ -1,4 +1,4 @@
-* papote version:
+* data_cliff version:
 * Python version:
 * Operating System:
 
