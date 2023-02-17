@@ -31,7 +31,6 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
-        "Operating System :: Linux",
     ],
     description="CLI tool to show differences on text data tracked by dvc.",
     entry_points={
