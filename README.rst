@@ -6,8 +6,12 @@ Data Cliff
 .. image:: https://img.shields.io/pypi/v/data_cliff.svg
         :target: https://pypi.python.org/pypi/data_cliff
 
-.. image:: https://img.shields.io/travis/ruizdesotto/data_cliff.svg
-        :target: https://travis-ci.com/ruizdesotto/data_cliff
+.. image:: https://img.shields.io/pypi/pyversions/data_cliff
+        :target: https://pypi.python.org/pypi/data_cliff
+        :alt: Python Version
+
+.. .. image:: https://img.shields.io/travis/ruizdesotto/data_cliff.svg
+..         :target: https://travis-ci.com/ruizdesotto/data_cliff
 
 .. image:: https://readthedocs.org/projects/data-cliff/badge/?version=latest
         :target: https://data-cliff.readthedocs.io/en/latest/?version=latest
