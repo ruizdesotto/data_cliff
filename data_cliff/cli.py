@@ -6,7 +6,7 @@ import warnings
 from data_cliff.data_cliff import compare
 
 
-def main():
+def main() -> int:
     """Console script for data_cliff."""
     parser = argparse.ArgumentParser()
     parser.add_argument("_", nargs="*")

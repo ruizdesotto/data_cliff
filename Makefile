@@ -48,11 +48,13 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr .pytest_cache
 
 lint/flake8: ## check style with flake8
-	flake8 data_cliff tests
+	flake8 data_cliff tests --count
+
 lint/black: ## check style with black
 	black --check data_cliff tests
 
 lint: lint/flake8 lint/black ## check style
+	python -m mypy data_cliff
 
 test: ## run tests quickly with the default Python
 	pytest
