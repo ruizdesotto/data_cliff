@@ -88,5 +88,8 @@ dist: clean ## builds source and wheel package
 install: clean ## install the package to the active Python's site-packages
 	python setup.py install
 
+install-dev: clean ## install the package to the active Python's site-packages
+	pip install -r requirements/all.txt
+
 test-release: dist ## test package and upload a release
 	twine upload --repository testpypi --config-file ../.pypirc dist/*
