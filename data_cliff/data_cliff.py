@@ -5,7 +5,7 @@ from tempfile import TemporaryDirectory
 from dvc.api import DVCFileSystem
 
 
-def compare(file_path: Path):
+def compare(file_path: Path) -> None:
     a_rev = "HEAD"
     b_rev = None
     a_fs = DVCFileSystem(rev=a_rev)
