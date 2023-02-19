@@ -49,6 +49,6 @@ setup(
     test_suite="tests",
     tests_require=test_requirements,
     url="https://github.com/ruizdesotto/data_cliff",
-    version="0.0.1",
+    version="{{VERSION_PLACEHOLDER}}",
     zip_safe=False,
 )
