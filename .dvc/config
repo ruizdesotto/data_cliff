@@ -1,0 +1,4 @@
+[core]
+    remote = test
+['remote "test"']
+    url = /tmp/data_cliff_remote_data

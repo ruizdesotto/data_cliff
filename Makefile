@@ -95,3 +95,12 @@ install-dev: clean ## install the package to the active Python's site-packages
 
 test-release: dist ## test package and upload a release
 	twine upload --repository testpypi --config-file ../.pypirc dist/*
+
+purge-dvc-test-data: ## Purge data folder
+	@find tests/test_dvc_data/local_data/ -type f ! -name '*.dvc' -delete ;
+	@find tests/test_dvc_data/local_data/ -type d -empty -delete ;
+	@rm -rf .dvc/cache/
+
+load-tmp-remote:  ## Move dvc storage to the /tmp/dir for testing
+	@mkdir -p /tmp/data_cliff_remote_data
+	@cp -r tests/test_dvc_data/remote_data/* /tmp/data_cliff_remote_data/
