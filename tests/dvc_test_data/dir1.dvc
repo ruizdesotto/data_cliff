@@ -1,0 +1,5 @@
+outs:
+- md5: 67bc33f4f7985f8d2221e9433f3b4f97.dir
+  size: 0
+  nfiles: 1
+  path: dir1
