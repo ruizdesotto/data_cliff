@@ -4,8 +4,6 @@
 
 import pytest
 
-from data_cliff import data_cliff
-
 
 @pytest.fixture
 def response():
@@ -17,5 +15,16 @@ def response():
     # return requests.get('https://github.com/audreyr/cookiecutter-pypackage')
 
 
-def test_():
-    assert data_cliff is not None
+def test_bare_example():
+    # Given
+    from data_cliff.data_cliff import compare
+
+    a_rev = "b0660085fd6990399379d81d41ce2be7fcae643e"
+    b_rev = "873afcd844f6a3c77c9661135138e619ba11b11f"
+    file = "tests/dvc_test_data/dir1/file"
+
+    # When
+    compare(a_rev, b_rev, file)
+
+    # Assert
+    pass
