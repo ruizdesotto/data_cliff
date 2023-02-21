@@ -1,0 +1,4 @@
+[core]
+    remote = test_store
+['remote "test_store"']
+    url = test_store
