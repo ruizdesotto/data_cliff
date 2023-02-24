@@ -2,24 +2,9 @@ import json
 from pathlib import Path
 
 
-def test_retrieves_file(dvc_path: Path, tmp_path: Path) -> None:
+def test__main(dvc_path, capsys) -> None:
     # Given
-    from dvc.api import DVCFileSystem
-
-    a_fs = DVCFileSystem(rev="HEAD")
-    file = dvc_path / "dir" / "file.json"
-    out_file = tmp_path / "file.json"
-
-    # When
-    a_fs.get(str(file), str(out_file))
-
-    # Then
-    assert out_file.is_file()
-
-
-def test_compare_staged_change(dvc_path, capsys) -> None:
-    # Given
-    from data_cliff.data_cliff import compare
+    from data_cliff.cli import _main
 
     file = dvc_path / "dir" / "file.json"
     _add_line_to_path(file)
@@ -30,7 +15,7 @@ def test_compare_staged_change(dvc_path, capsys) -> None:
     )
 
     # When
-    compare("HEAD", None, str(file))
+    _main([str(file)])
     stdout, _ = capsys.readouterr()
 
     # Then
