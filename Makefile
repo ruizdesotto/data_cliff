@@ -56,8 +56,8 @@ lint/black: ## check style with black
 lint: lint/flake8 lint/black ## check style
 	python -m mypy data_cliff
 
-test: ## run tests quickly with the default Python
-	pytest
+test:  ## run tests quickly with the default Python
+	pytest -vvv
 
 test-all: ## run tests on every Python version with tox
 	tox
@@ -92,6 +92,7 @@ install: clean ## install the package to the active Python's site-packages
 
 install-dev: clean ## install the package to the active Python's site-packages
 	pip install -r requirements/all.txt
+	make prepare-dvc-test-remote
 
 test-release: dist ## test package and upload a release
 	twine upload --repository testpypi --config-file ../.pypirc dist/*
@@ -101,6 +102,7 @@ purge-dvc-test-data: ## Purge data folder
 	@find tests/test_dvc_data/local_data/ -type d -empty -delete ;
 	@rm -rf .dvc/cache/
 
-load-tmp-remote:  ## Move dvc storage to the /tmp/dir for testing
+prepare-dvc-test-remote:  ## Move dvc storage to the /tmp/dir for testing
 	@mkdir -p /tmp/data_cliff_remote_data
 	@cp -r tests/test_dvc_data/remote_data/* /tmp/data_cliff_remote_data/
+	dvc pull
