@@ -30,7 +30,7 @@ jobs:
       run: |
         make test
   if_merged:
-    if: github.event.pull_request.merged == true
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
     - run: |
