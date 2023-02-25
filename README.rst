@@ -22,6 +22,10 @@ Data Cliff
      :target: https://pyup.io/repos/github/ruizdesotto/data_cliff/
      :alt: Updates
 
+.. image:: https://codecov.io/gh/ruizdesotto/data_cliff/branch/main/graph/badge.svg
+    :target: https://codecov.io/gh/ruizdesotto/data_cliff
+    :alt: Coverage
+
 
 
 CLI tool to show differences on text data tracked by dvc.
