@@ -57,6 +57,7 @@ lint: lint/flake8 lint/black ## check style
 	python -m mypy data_cliff
 
 test:  ## run tests quickly with the default Python
+	@git fetch --all
 	pytest -vvv
 
 test-all: ## run tests on every Python version with tox

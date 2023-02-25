@@ -17,7 +17,6 @@ class _Args:
 
 def parse_args(args: list[str]) -> _Args:
     raw_args = parse_command_line_raw_args(args)
-
     a_rev = raw_args.pos_1 if _is_git_rev(raw_args.pos_1) else "HEAD"
     b_rev = raw_args.pos_2 if _is_git_rev(raw_args.pos_2) else None
     data_path = _get_data_path(raw_args)
