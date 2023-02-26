@@ -11,3 +11,5 @@ pytest>=7.2.1
 black>=23.1.0
 mypy>=1.0.1
 pytest-cov==4.0.0
+dvc
+
