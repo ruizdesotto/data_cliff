@@ -31,28 +31,3 @@ jobs:
         make test
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
-
-  if_merged:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.10"]
-
-    if: github.ref == 'refs/heads/main'
-    steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        make install-dev
-    - name: Test with pytest
-      run: |
-        make test
-    - run: |
-        echo The PR was merged
-    - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v3
