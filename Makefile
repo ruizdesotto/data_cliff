@@ -69,12 +69,14 @@ coverage: ## check code coverage quickly with the default Python
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
-docs: ## generate Sphinx HTML documentation, including API docs
+build-docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/data_cliff.rst
 	rm -f docs/modules.rst
 	sphinx-apidoc -o docs/ data_cliff
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
+
+docs: build-docs ## Generate and show the Sphinx HTML documentation
 	$(BROWSER) docs/_build/html/index.html
 
 servedocs: docs ## compile the docs watching for changes
@@ -93,6 +95,7 @@ install: clean ## install the package to the active Python's site-packages
 
 install-dev: clean ## install the package to the active Python's site-packages
 	pip install -r requirements/all.txt
+	python setup.py install
 	make prepare-dvc-test-remote
 
 test-release: dist ## test package and upload a release

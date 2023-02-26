@@ -10,9 +10,6 @@ Data Cliff
         :target: https://pypi.python.org/pypi/data_cliff
         :alt: Python Version
 
-.. .. image:: https://img.shields.io/travis/ruizdesotto/data_cliff.svg
-..         :target: https://travis-ci.com/ruizdesotto/data_cliff
-
 .. image:: https://readthedocs.org/projects/data-cliff/badge/?version=latest
         :target: https://data-cliff.readthedocs.io/en/latest/?version=latest
         :alt: Documentation Status
@@ -35,10 +32,27 @@ CLI tool to show differences on text data tracked by dvc.
 * Documentation: https://data-cliff.readthedocs.io.
 
 
-Features
---------
+Installation
+------------
 
-* TODO
+You can install the tool directly from ``pip``::
+
+    pip install data_cliff
+
+
+Quick start-guide
+-----------------
+
+``data_cliff`` is a tool that helps you visualize differences on text file you're
+tracking on a ``dvc`` repo. Its CLI ``cliff`` aims to be as closed to ``git diff``
+as possible::
+
+    cliff [a_rev] [b_rev] [path/to/file]
+
+
+``WARNING`` You must be in a `dvc` repository.
+
+
 
 Credits
 -------
