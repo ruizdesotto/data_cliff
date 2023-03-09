@@ -4,7 +4,7 @@ from data_cliff.arg_parse import parse_args
 from data_cliff.data_cliff import compare
 
 
-def _main(raw_args: list[str]) -> int:
+def main(raw_args: list[str]) -> int:
     """Console script for data_cliff."""
     args = parse_args(raw_args)
 
@@ -17,4 +17,4 @@ def _main(raw_args: list[str]) -> int:
 if __name__ == "__main__":  # pragma: no cover
     import sys
 
-    sys.exit(_main(sys.argv[1:]))
+    sys.exit(main(sys.argv[1:]))
