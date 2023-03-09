@@ -4,7 +4,7 @@ from pathlib import Path
 
 def test__main(dvc_path, capsys) -> None:
     # Given
-    from data_cliff.cli import _main
+    from data_cliff.cli import main
 
     file = dvc_path / "dir" / "file.json"
     _add_line_to_path(file)
@@ -15,7 +15,7 @@ def test__main(dvc_path, capsys) -> None:
     )
 
     # When
-    _main([str(file)])
+    main([str(file)])
     stdout, _ = capsys.readouterr()
 
     # Then
