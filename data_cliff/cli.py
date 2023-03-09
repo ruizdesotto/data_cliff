@@ -1,12 +1,13 @@
+import sys
 import warnings
 
 from data_cliff.arg_parse import parse_args
 from data_cliff.data_cliff import compare
 
 
-def main(raw_args: list[str]) -> int:
+def main() -> int:
     """Console script for data_cliff."""
-    args = parse_args(raw_args)
+    args = parse_args(sys.argv[1:])
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
@@ -15,6 +16,4 @@ def main(raw_args: list[str]) -> int:
 
 
 if __name__ == "__main__":  # pragma: no cover
-    import sys
-
-    sys.exit(main(sys.argv[1:]))
+    sys.exit(main())

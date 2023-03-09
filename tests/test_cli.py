@@ -1,12 +1,17 @@
 import json
 from pathlib import Path
+from unittest.mock import patch
 
 
-def test__main(dvc_path, capsys) -> None:
+def test_main(dvc_path, capsys) -> None:
     # Given
+    import sys
+
     from data_cliff.cli import main
 
     file = dvc_path / "dir" / "file.json"
+    test_args = ["cliff", str(file)]
+
     _add_line_to_path(file)
 
     expected_output = (
@@ -15,7 +20,8 @@ def test__main(dvc_path, capsys) -> None:
     )
 
     # When
-    main([str(file)])
+    with patch.object(sys, "argv", test_args):
+        main()
     stdout, _ = capsys.readouterr()
 
     # Then
