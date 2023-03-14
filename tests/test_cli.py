@@ -7,6 +7,8 @@ def test_main(dvc_path, capsys) -> None:
     # Given
     import sys
 
+    from dvc.api import DVCFileSystem
+
     from data_cliff.cli import main
 
     file = dvc_path / "dir" / "file.json"
@@ -15,8 +17,13 @@ def test_main(dvc_path, capsys) -> None:
     _add_line_to_path(file)
 
     expected_output = (
-        '--- \n\n+++ \n\n@@ -1,3 +1,4 @@\n\n {\n-    "test": "file"'
-        '\n+    "test": "file",\n+    "new_key": "new_value"\n }\n'
+        "--- \n"
+        "+++ \n"
+        "@@ -1,3 +1,4 @@\n"
+        " {\n"
+        '-    "test": "file"\n'
+        '+    "test": "file",\n'
+        '+    "new_key": "new_value"\n }\n'
     )
 
     # When
@@ -26,6 +33,9 @@ def test_main(dvc_path, capsys) -> None:
 
     # Then
     assert stdout == expected_output
+
+    # Finally
+    DVCFileSystem(rev="HEAD").get(str(file), str(file))
 
 
 def _add_line_to_path(file: Path) -> None:
