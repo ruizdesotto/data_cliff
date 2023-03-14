@@ -19,14 +19,22 @@ def test_retrieves_file(dvc_path: Path, tmp_path: Path) -> None:
 
 def test_compare_staged_change(dvc_path, capsys) -> None:
     # Given
+    from dvc.api import DVCFileSystem
+
     from data_cliff.data_cliff import compare
 
     file = dvc_path / "dir" / "file.json"
     _add_line_to_path(file)
 
     expected_output = (
-        '--- \n\n+++ \n\n@@ -1,3 +1,4 @@\n\n {\n-    "test": "file"'
-        '\n+    "test": "file",\n+    "new_key": "new_value"\n }\n'
+        "--- \n"
+        "+++ \n"
+        "@@ -1,3 +1,4 @@\n"
+        " {\n"
+        '\x1b[91m-    "test": "file"\x1b[00m\n'
+        '\x1b[92m+    "test": "file",\x1b[00m\n'
+        '\x1b[92m+    "new_key": "new_value"\x1b[00m\n'
+        " }\n"
     )
 
     # When
@@ -35,6 +43,9 @@ def test_compare_staged_change(dvc_path, capsys) -> None:
 
     # Then
     assert stdout == expected_output
+
+    # Finally
+    DVCFileSystem(rev="HEAD").get(str(file), str(file))
 
 
 def _add_line_to_path(file: Path) -> None:
