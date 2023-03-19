@@ -13,17 +13,20 @@ def test_main(dvc_path, capsys) -> None:
 
     file = dvc_path / "dir" / "file.json"
     test_args = ["cliff", str(file)]
-
     _add_line_to_path(file)
 
     expected_output = (
-        "--- \n"
-        "+++ \n"
+        "cliff a/tests/test_dvc_data/local_data/dir/file.json"
+        " b/tests/test_dvc_data/local_data/dir/file.json\n"
+        "index 612420a..db800ff 100644\n"
+        "--- a/tests/test_dvc_data/local_data/dir/file.json\n"
+        "+++ b/tests/test_dvc_data/local_data/dir/file.json\n"
         "@@ -1,3 +1,4 @@\n"
         " {\n"
         '-    "test": "file"\n'
         '+    "test": "file",\n'
-        '+    "new_key": "new_value"\n }\n'
+        '+    "new_key": "new_value"\n'
+        " }\n"
     )
 
     # When

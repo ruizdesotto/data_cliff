@@ -27,8 +27,11 @@ def test_compare_staged_change(dvc_path, capsys) -> None:
     _add_line_to_path(file)
 
     expected_output = (
-        "--- \n"
-        "+++ \n"
+        "cliff a/tests/test_dvc_data/local_data/dir/file.json"
+        " b/tests/test_dvc_data/local_data/dir/file.json\n"
+        "index 612420a..db800ff 100644\n"
+        "--- a/tests/test_dvc_data/local_data/dir/file.json\n"
+        "+++ b/tests/test_dvc_data/local_data/dir/file.json\n"
         "@@ -1,3 +1,4 @@\n"
         " {\n"
         '\x1b[91m-    "test": "file"\x1b[00m\n'
