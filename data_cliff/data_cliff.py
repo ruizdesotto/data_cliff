@@ -9,18 +9,37 @@ from dvc.api import DVCFileSystem
 def compare(a_rev: str, b_rev: str | None, data_path: str) -> None:
     a_fs = DVCFileSystem(rev=a_rev)
     b_fs = DVCFileSystem(rev=b_rev)
-    if not Path(data_path).is_file():
-        raise NotImplementedError("You're gonna have to wait for directories.")
     with TemporaryDirectory() as tmp_path:
         a_path = tmp_path + "a"
         b_path = tmp_path + "b"
-        a_fs.get(data_path, a_path)
-        b_fs.get(data_path, b_path)
+        a_fs.get(data_path, a_path, recursive=_is_directory(a_fs, data_path))
+        b_fs.get(data_path, b_path, recursive=_is_directory(b_fs, data_path))
 
-        _diff_files(a_path, b_path, file_name=data_path)
+        _diff_files(a_path, b_path, data_path=data_path)
 
 
-def _diff_files(a_path: str, b_path: str, file_name: str) -> None:
+def _is_directory(fs: DVCFileSystem, data_path: str) -> bool:
+    is_directory: bool = fs.info(str(data_path))["type"] == "directory"
+    return is_directory
+
+
+def _diff_files(a_path: str, b_path: str, data_path: str) -> None:
+    if Path(a_path).is_file():
+        return _diff_file(a_path=a_path, b_path=b_path, file_name=data_path)
+    files = set(
+        file.relative_to(x_path)
+        for x_path in [a_path, b_path]
+        for file in Path(x_path).iterdir()
+    )
+    for file in files:
+        _diff_files(
+            a_path=f"{a_path}/{file}",
+            b_path=f"{b_path}/{file}",
+            data_path=f"{data_path}/{file}",
+        )
+
+
+def _diff_file(a_path: str, b_path: str, file_name: str) -> None:
     with open(a_path) as a, open(b_path) as b:
         diff_list = [
             _format_line(line)
