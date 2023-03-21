@@ -5,6 +5,7 @@ name: CI testing
 
 on:
   push:
+  pull_request:
 
 jobs:
   test-n-lint:
