@@ -41,14 +41,10 @@ def _is_git_rev(rev: str | None) -> bool:
 
 
 def _get_data_path(raw_args: argparse.Namespace):
-    if not _is_git_rev(raw_args.pos_1) and raw_args.pos_1 is not None:
-        return raw_args.pos_1
-    elif not _is_git_rev(raw_args.pos_2) and raw_args.pos_2 is not None:
-        return raw_args.pos_2
-    elif not _is_git_rev(raw_args.pos_3) and raw_args.pos_3 is not None:
-        return raw_args.pos_3
-    else:
-        return ""
+    for arg in [raw_args.pos_1, raw_args.pos_2, raw_args.pos_3]:
+        if arg is not None and not _is_git_rev(arg):
+            return arg
+    return ""
 
 
 def _cli_parse_factory() -> argparse.ArgumentParser:
