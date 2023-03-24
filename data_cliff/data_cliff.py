@@ -3,29 +3,25 @@ from hashlib import md5
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from dvc.api import DVCFileSystem
+from data_cliff.getter import get_data
 
 
-def compare(a_rev: str, b_rev: str | None, data_path: str) -> None:
-    a_fs = DVCFileSystem(rev=a_rev)
-    b_fs = DVCFileSystem(rev=b_rev)
+def compare(a_rev: str, b_rev: str | None, data_path: str) -> int:
     with TemporaryDirectory() as tmp_path:
         a_path = tmp_path + "a"
         b_path = tmp_path + "b"
-        a_fs.get(data_path, a_path, recursive=_is_directory(a_fs, data_path))
-        b_fs.get(data_path, b_path, recursive=_is_directory(b_fs, data_path))
+        success = get_data(a_rev, data_path, local_path=a_path)
+        success |= get_data(b_rev, data_path, local_path=b_path)
 
+        if not success:
+            return _error_retrieving_data(data_path)
         _diff_files(a_path, b_path, data_path=data_path)
-
-
-def _is_directory(fs: DVCFileSystem, data_path: str) -> bool:
-    is_directory: bool = fs.info(str(data_path))["type"] == "directory"
-    return is_directory
+        return 0
 
 
 def _diff_files(a_path: str, b_path: str, data_path: str) -> None:
-    if Path(a_path).is_file():
-        return _diff_file(a_path=a_path, b_path=b_path, file_name=data_path)
+    if Path(a_path).is_file() or Path(b_path).is_file():
+        return _diff_file(a_file_path=a_path, b_file_path=b_path, file_name=data_path)
     files = set(
         file.relative_to(x_path)
         for x_path in [a_path, b_path]
@@ -39,8 +35,10 @@ def _diff_files(a_path: str, b_path: str, data_path: str) -> None:
         )
 
 
-def _diff_file(a_path: str, b_path: str, file_name: str) -> None:
-    with open(a_path) as a, open(b_path) as b:
+def _diff_file(a_file_path: str, b_file_path: str, file_name: str) -> None:
+    _assert_files_exist(a_file_path, b_file_path)
+
+    with open(a_file_path) as a, open(b_file_path) as b:
         diff_list = [
             _format_line(line)
             for line in unified_diff(
@@ -51,8 +49,18 @@ def _diff_file(a_path: str, b_path: str, file_name: str) -> None:
             )
         ]
 
-        header = _get_header(a_path, b_path, file_name)
+        header = _get_header(a_file_path, b_file_path, file_name)
         _display(diff_list, header)
+
+
+def _assert_files_exist(a_file_path: str, b_file_path: str) -> None:
+    _touch_if_does_not_exist(Path(a_file_path))
+    _touch_if_does_not_exist(Path(b_file_path))
+
+
+def _touch_if_does_not_exist(file_path: Path) -> None:
+    if not file_path.exists():
+        file_path.touch()
 
 
 def _format_line(line: str) -> str:
@@ -99,3 +107,8 @@ def _display(diff: list[str], header: str) -> None:
         return
     print(header)
     print("\n".join(diff))
+
+
+def _error_retrieving_data(data_path: str) -> int:
+    print(f'Error: Path "{data_path}" not found.')
+    return 1
