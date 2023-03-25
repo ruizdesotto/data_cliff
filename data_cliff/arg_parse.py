@@ -1,5 +1,6 @@
 import argparse
 from dataclasses import dataclass
+from typing import Optional
 
 from pygit2 import Repository, RevSpec
 
@@ -11,7 +12,7 @@ class CLIException(Exception):
 @dataclass(frozen=True)
 class _Args:
     a_rev: str
-    b_rev: str | None
+    b_rev: Optional[str]
     data_path: str
 
 
@@ -31,7 +32,7 @@ def parse_command_line_raw_args(args: list[str]) -> argparse.Namespace:
         raise CLIException(raw_parser.usage)
 
 
-def _is_git_rev(rev: str | None) -> bool:
+def _is_git_rev(rev: Optional[str]) -> bool:
     if rev is None:
         return False
     try:
