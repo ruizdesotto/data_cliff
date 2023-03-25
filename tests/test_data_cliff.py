@@ -53,6 +53,7 @@ def test_compare_staged_change_on_single_file(dvc_path, capsys) -> None:
         DVCFileSystem(rev="HEAD").get(str(file), str(file))
 
 
+# @pytest.mark.skip()
 def test_compare_staged_change_on_folder(
     dvc_path: Path, capsys: pytest.CaptureFixture
 ) -> None:
@@ -85,7 +86,7 @@ def test_compare_staged_change_on_folder(
         # Then
         assert stdout == expected_output
     finally:
-        DVCFileSystem(rev="HEAD").get(str(folder), str(folder), recursive=True)
+        DVCFileSystem(rev="HEAD").get(str(folder), str(folder.parent), recursive=True)
 
 
 def test_compare_staged_change_on_new_file(
@@ -95,7 +96,8 @@ def test_compare_staged_change_on_new_file(
 
     from data_cliff.data_cliff import compare
 
-    new_file = dvc_path / "dir" / "new_file.txt"
+    folder = dvc_path / "dir"
+    new_file = folder / "new_file.txt"
     new_file.touch()
     _add_line_to_file(new_file)
 
@@ -111,7 +113,7 @@ def test_compare_staged_change_on_new_file(
 
     try:
         # When
-        compare("HEAD", None, str(new_file))
+        compare("HEAD", None, str(folder))
         stdout, _ = capsys.readouterr()
 
         # Then
