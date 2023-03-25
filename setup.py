@@ -44,6 +44,7 @@ setup(
     keywords="data_cliff",
     name="data_cliff",
     packages=find_packages(include=["data_cliff", "data_cliff.*"]),
+    package_data={"data_cliff": ["py.typed"]},
     test_suite="tests",
     tests_require=test_requirements,
     url="https://github.com/ruizdesotto/data_cliff",
