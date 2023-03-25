@@ -2,11 +2,12 @@ from difflib import unified_diff
 from hashlib import md5
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Optional
 
 from data_cliff.getter import get_data
 
 
-def compare(a_rev: str, b_rev: str | None, data_path: str) -> int:
+def compare(a_rev: str, b_rev: Optional[str], data_path: str) -> int:
     with TemporaryDirectory() as tmp_path:
         a_path = tmp_path + "a"
         b_path = tmp_path + "b"
