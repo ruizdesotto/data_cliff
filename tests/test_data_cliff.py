@@ -22,11 +22,9 @@ def test_retrieves_file(dvc_path: Path, tmp_path: Path) -> None:
 
 
 def test_compare_staged_change_on_text_file(
-    dvc_path: Path, captured_print: io.StringIO
+    dvc_path: Path, captured_print: io.StringIO, clean_up_dvc: None
 ) -> None:
     # Given
-    from dvc.api import DVCFileSystem
-
     from data_cliff.data_cliff import compare
 
     file = dvc_path / "dir" / "file.json"
@@ -46,22 +44,17 @@ def test_compare_staged_change_on_text_file(
         " }\n"
     )
 
-    try:
-        # When
-        compare("HEAD", None, str(file))
+    # When
+    compare("HEAD", None, str(file))
 
-        # Then
-        assert captured_print.getvalue() == expected_output
-    finally:
-        DVCFileSystem(rev="HEAD").get(str(file), str(file))
+    # Then
+    assert captured_print.getvalue() == expected_output
 
 
 def test_compare_staged_change_on_binary_file(
-    dvc_path, captured_print: io.StringIO
+    dvc_path, captured_print: io.StringIO, clean_up_dvc: None
 ) -> None:
     # Given
-    from dvc.api import DVCFileSystem
-
     from data_cliff.data_cliff import compare
 
     file = dvc_path / "dir" / "binary"
@@ -75,22 +68,17 @@ def test_compare_staged_change_on_binary_file(
         "b/tests/test_dvc_data/local_data/dir/binary differ\n"
     )
 
-    try:
-        # When
-        compare("HEAD", None, str(file))
+    # When
+    compare("HEAD", None, str(file))
 
-        # Then
-        assert captured_print.getvalue() == expected_output
-    finally:
-        DVCFileSystem(rev="HEAD").get(str(file), str(file))
+    # Then
+    assert captured_print.getvalue() == expected_output
 
 
 def test_compare_staged_change_on_folder(
-    dvc_path: Path, captured_print: io.StringIO
+    dvc_path: Path, captured_print: io.StringIO, clean_up_dvc: None
 ) -> None:
     # Given
-    from dvc.api import DVCFileSystem
-
     from data_cliff.data_cliff import compare
 
     folder = dvc_path / "dir"
@@ -109,14 +97,12 @@ def test_compare_staged_change_on_folder(
         '\x1b[92m+    "new_key": "new_value"\x1b[00m\n'
         " }\n"
     )
-    try:
-        # When
-        compare("HEAD", None, str(folder))
 
-        # Then
-        assert captured_print.getvalue() == expected_output
-    finally:
-        DVCFileSystem(rev="HEAD").get(str(folder), str(folder.parent), recursive=True)
+    # When
+    compare("HEAD", None, str(folder))
+
+    # Then
+    assert captured_print.getvalue() == expected_output
 
 
 @pytest.mark.parametrize(

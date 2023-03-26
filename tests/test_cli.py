@@ -4,11 +4,9 @@ from pathlib import Path
 from unittest.mock import patch
 
 
-def test_main(dvc_path, captured_print: io.StringIO) -> None:
+def test_main(dvc_path, captured_print: io.StringIO, clean_up_dvc: None) -> None:
     # Given
     import sys
-
-    from dvc.api import DVCFileSystem
 
     from data_cliff.cli import main
 
@@ -36,9 +34,6 @@ def test_main(dvc_path, captured_print: io.StringIO) -> None:
 
     # Then
     assert captured_print.getvalue() == expected_output
-
-    # Finally
-    DVCFileSystem(rev="HEAD").get(str(file), str(file))
 
 
 def _add_line_to_path(file: Path) -> None:
