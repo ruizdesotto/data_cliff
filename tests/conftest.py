@@ -2,6 +2,7 @@ import io
 import shutil
 from pathlib import Path
 from unittest.mock import patch
+from dvc.repo import Repo
 
 import pytest
 
@@ -23,3 +24,9 @@ def captured_print():
     with io.StringIO() as output:
         with patch("builtins.print", new=lambda msg: output.write(f"{msg}\n")):
             yield output
+
+
+@pytest.fixture(scope="function")
+def clean_up_dvc():
+    yield
+    Repo(".").pull(force=True)
