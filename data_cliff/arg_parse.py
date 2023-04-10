@@ -36,7 +36,7 @@ def _is_git_rev(rev: Optional[str]) -> bool:
     if rev is None:
         return False
     try:
-        return isinstance(Repository(".").revparse(rev), RevSpec)
+        return isinstance(Repository(".").revparse(rev.rstrip("/")), RevSpec)
     except KeyError:
         return False
 
