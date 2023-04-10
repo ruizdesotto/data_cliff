@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from struct import pack
 
 import pytest
 
@@ -19,7 +20,7 @@ def test_retrieves_file(dvc_path: Path, tmp_path: Path) -> None:
     assert out_file.is_file()
 
 
-def test_compare_staged_change_on_single_file(dvc_path, capsys) -> None:
+def test_compare_staged_change_on_text_file(dvc_path, capsys) -> None:
     # Given
     from dvc.api import DVCFileSystem
 
@@ -40,6 +41,34 @@ def test_compare_staged_change_on_single_file(dvc_path, capsys) -> None:
         '\x1b[92m+    "test": "file",\x1b[00m\n'
         '\x1b[92m+    "new_key": "new_value"\x1b[00m\n'
         " }\n"
+    )
+
+    try:
+        # When
+        compare("HEAD", None, str(file))
+        stdout, _ = capsys.readouterr()
+
+        # Then
+        assert stdout == expected_output
+    finally:
+        DVCFileSystem(rev="HEAD").get(str(file), str(file))
+
+
+def test_compare_staged_change_on_binary_file(dvc_path, capsys) -> None:
+    # Given
+    from dvc.api import DVCFileSystem
+
+    from data_cliff.data_cliff import compare
+
+    file = dvc_path / "dir" / "binary"
+    _modify_binary_file(file)
+
+    expected_output = (
+        "cliff a/tests/test_dvc_data/local_data/dir/binary "
+        "b/tests/test_dvc_data/local_data/dir/binary\n"
+        "index dc84b0d..dd0695e 100644\n"
+        "Binary files a/tests/test_dvc_data/local_data/dir/binary and "
+        "b/tests/test_dvc_data/local_data/dir/binary differ\n"
     )
 
     try:
@@ -151,6 +180,11 @@ def _add_line_to_file(file: Path) -> None:
 
     with open(file, "w") as outid:
         outid.write("".join(data))
+
+
+def _modify_binary_file(file: Path) -> None:
+    with open(file, "ab") as fid:
+        fid.write(pack("i", 255))
 
 
 def _add_key_to_json(file: Path) -> None:
