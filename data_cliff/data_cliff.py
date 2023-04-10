@@ -38,7 +38,18 @@ def _diff_files(a_path: str, b_path: str, data_path: str) -> None:
 
 def _diff_file(a_file_path: str, b_file_path: str, file_name: str) -> None:
     _assert_files_exist(a_file_path, b_file_path)
+    try:
+        _diff_text_file(a_file_path, b_file_path, file_name)
+    except UnicodeDecodeError:
+        _diff_binary_file(a_file_path, b_file_path, file_name)
 
+
+def _assert_files_exist(a_file_path: str, b_file_path: str) -> None:
+    _touch_if_does_not_exist(Path(a_file_path))
+    _touch_if_does_not_exist(Path(b_file_path))
+
+
+def _diff_text_file(a_file_path: str, b_file_path: str, file_name: str) -> None:
     with open(a_file_path) as a, open(b_file_path) as b:
         diff_list = [
             _format_line(line)
@@ -54,9 +65,12 @@ def _diff_file(a_file_path: str, b_file_path: str, file_name: str) -> None:
         _display(diff_list, header)
 
 
-def _assert_files_exist(a_file_path: str, b_file_path: str) -> None:
-    _touch_if_does_not_exist(Path(a_file_path))
-    _touch_if_does_not_exist(Path(b_file_path))
+def _diff_binary_file(a_file_path: str, b_file_path: str, file_name: str) -> None:
+    a_hash = _hash_file(a_file_path)
+    b_hash = _hash_file(b_file_path)
+    if a_hash != b_hash:
+        header = _get_header(a_file_path, b_file_path, file_name)
+        _display([f"Binary files a/{file_name} and b/{file_name} differ"], header)
 
 
 def _touch_if_does_not_exist(file_path: Path) -> None:
