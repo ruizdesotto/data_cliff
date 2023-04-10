@@ -53,7 +53,6 @@ def test_compare_staged_change_on_single_file(dvc_path, capsys) -> None:
         DVCFileSystem(rev="HEAD").get(str(file), str(file))
 
 
-# @pytest.mark.skip()
 def test_compare_staged_change_on_folder(
     dvc_path: Path, capsys: pytest.CaptureFixture
 ) -> None:

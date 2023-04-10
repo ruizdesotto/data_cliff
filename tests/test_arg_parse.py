@@ -11,7 +11,7 @@ from data_cliff.arg_parse import CLIException
     [
         ([], "HEAD", None, ""),
         (["origin/main"], "origin/main", None, ""),
-        (["some/path"], "HEAD", None, "some/path"),
+        (["some/path/"], "HEAD", None, "some/path/"),
         (["origin/main", "some/path"], "origin/main", None, "some/path"),
         (["origin/main", "HEAD", "some/path"], "origin/main", "HEAD", "some/path"),
     ],
