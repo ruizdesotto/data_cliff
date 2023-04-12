@@ -1,2 +1,2 @@
-local_data/**/*.*
+local_data/**/*
 !local_data/**/*.dvc

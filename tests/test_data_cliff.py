@@ -1,8 +1,7 @@
+import io
 import json
 from pathlib import Path
 from struct import pack
-
-import pytest
 
 
 def test_retrieves_file(dvc_path: Path, tmp_path: Path) -> None:
@@ -20,7 +19,9 @@ def test_retrieves_file(dvc_path: Path, tmp_path: Path) -> None:
     assert out_file.is_file()
 
 
-def test_compare_staged_change_on_text_file(dvc_path, capsys) -> None:
+def test_compare_staged_change_on_text_file(
+    dvc_path: Path, captured_print: io.StringIO
+) -> None:
     # Given
     from dvc.api import DVCFileSystem
 
@@ -46,15 +47,16 @@ def test_compare_staged_change_on_text_file(dvc_path, capsys) -> None:
     try:
         # When
         compare("HEAD", None, str(file))
-        stdout, _ = capsys.readouterr()
 
         # Then
-        assert stdout == expected_output
+        assert captured_print.getvalue() == expected_output
     finally:
         DVCFileSystem(rev="HEAD").get(str(file), str(file))
 
 
-def test_compare_staged_change_on_binary_file(dvc_path, capsys) -> None:
+def test_compare_staged_change_on_binary_file(
+    dvc_path, captured_print: io.StringIO
+) -> None:
     # Given
     from dvc.api import DVCFileSystem
 
@@ -74,16 +76,15 @@ def test_compare_staged_change_on_binary_file(dvc_path, capsys) -> None:
     try:
         # When
         compare("HEAD", None, str(file))
-        stdout, _ = capsys.readouterr()
 
         # Then
-        assert stdout == expected_output
+        assert captured_print.getvalue() == expected_output
     finally:
         DVCFileSystem(rev="HEAD").get(str(file), str(file))
 
 
 def test_compare_staged_change_on_folder(
-    dvc_path: Path, capsys: pytest.CaptureFixture
+    dvc_path: Path, captured_print: io.StringIO
 ) -> None:
     # Given
     from dvc.api import DVCFileSystem
@@ -109,16 +110,15 @@ def test_compare_staged_change_on_folder(
     try:
         # When
         compare("HEAD", None, str(folder))
-        stdout, _ = capsys.readouterr()
 
         # Then
-        assert stdout == expected_output
+        assert captured_print.getvalue() == expected_output
     finally:
         DVCFileSystem(rev="HEAD").get(str(folder), str(folder.parent), recursive=True)
 
 
 def test_compare_staged_change_on_new_file(
-    dvc_path: Path, capsys: pytest.CaptureFixture
+    dvc_path: Path, captured_print: io.StringIO
 ) -> None:
     # Given
 
@@ -142,16 +142,15 @@ def test_compare_staged_change_on_new_file(
     try:
         # When
         compare("HEAD", None, str(folder))
-        stdout, _ = capsys.readouterr()
 
         # Then
-        assert stdout == expected_output
+        assert captured_print.getvalue() == expected_output
     finally:
         new_file.unlink()
 
 
 def test_compare_on_non_existing_file(
-    dvc_path: Path, capsys: pytest.CaptureFixture
+    dvc_path: Path, captured_print: io.StringIO
 ) -> None:
     # Given
 
@@ -165,11 +164,10 @@ def test_compare_on_non_existing_file(
 
     # When
     error_code = compare("HEAD", None, str(new_file))
-    stdout, _ = capsys.readouterr()
 
     # Then
     assert error_code == 1
-    assert stdout == expected_output
+    assert captured_print.getvalue() == expected_output
 
 
 def _add_line_to_file(file: Path) -> None:
