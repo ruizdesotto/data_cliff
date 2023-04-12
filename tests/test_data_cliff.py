@@ -9,12 +9,12 @@ def test_retrieves_file(dvc_path: Path, tmp_path: Path) -> None:
     # Given
     from dvc.api import DVCFileSystem
 
-    a_fs = DVCFileSystem(rev="HEAD")
+    fs = DVCFileSystem(rev="HEAD")
     file = dvc_path / "dir" / "file.json"
     out_file = tmp_path / "file.json"
 
     # When
-    a_fs.get(str(file), str(out_file))
+    fs.get(str(file), str(out_file))
 
     # Then
     assert out_file.is_file()

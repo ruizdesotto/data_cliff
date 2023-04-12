@@ -11,17 +11,17 @@ class CLIException(Exception):
 
 @dataclass(frozen=True)
 class _Args:
-    a_rev: str
-    b_rev: Optional[str]
+    before_rev: str
+    after_rev: Optional[str]
     data_path: str
 
 
 def parse_args(args: list[str]) -> _Args:
     raw_args = parse_command_line_raw_args(args)
-    a_rev = raw_args.pos_1 if _is_git_rev(raw_args.pos_1) else "HEAD"
-    b_rev = raw_args.pos_2 if _is_git_rev(raw_args.pos_2) else None
+    before_rev = raw_args.pos_1 if _is_git_rev(raw_args.pos_1) else "HEAD"
+    after_rev = raw_args.pos_2 if _is_git_rev(raw_args.pos_2) else None
     data_path = _get_data_path(raw_args)
-    return _Args(a_rev=a_rev, b_rev=b_rev, data_path=data_path)
+    return _Args(before_rev=before_rev, after_rev=after_rev, data_path=data_path)
 
 
 def parse_command_line_raw_args(args: list[str]) -> argparse.Namespace:
