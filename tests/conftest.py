@@ -1,5 +1,7 @@
+import io
 import shutil
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -14,3 +16,10 @@ def setup_local_remote() -> None:
 @pytest.fixture(scope="session")
 def dvc_path() -> Path:
     return Path("tests") / "test_dvc_data" / "local_data"
+
+
+@pytest.fixture
+def captured_print():
+    with io.StringIO() as output:
+        with patch("builtins.print", new=lambda msg: output.write(f"{msg}\n")):
+            yield output

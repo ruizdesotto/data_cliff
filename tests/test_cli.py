@@ -1,9 +1,10 @@
+import io
 import json
 from pathlib import Path
 from unittest.mock import patch
 
 
-def test_main(dvc_path, capsys) -> None:
+def test_main(dvc_path, captured_print: io.StringIO) -> None:
     # Given
     import sys
 
@@ -23,19 +24,18 @@ def test_main(dvc_path, capsys) -> None:
         "+++ b/tests/test_dvc_data/local_data/dir/file.json\n"
         "@@ -1,3 +1,4 @@\n"
         " {\n"
-        '-    "test": "file"\n'
-        '+    "test": "file",\n'
-        '+    "new_key": "new_value"\n'
+        '\x1b[91m-    "test": "file"\x1b[00m\n'
+        '\x1b[92m+    "test": "file",\x1b[00m\n'
+        '\x1b[92m+    "new_key": "new_value"\x1b[00m\n'
         " }\n"
     )
 
     # When
     with patch.object(sys, "argv", test_args):
         main()
-    stdout, _ = capsys.readouterr()
 
     # Then
-    assert stdout == expected_output
+    assert captured_print.getvalue() == expected_output
 
     # Finally
     DVCFileSystem(rev="HEAD").get(str(file), str(file))
