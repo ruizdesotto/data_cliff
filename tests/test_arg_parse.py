@@ -7,7 +7,7 @@ from data_cliff.arg_parse import CLIException
 
 
 @pytest.mark.parametrize(
-    "args, a_rev, b_rev, data_path",
+    "args, before_rev, after_rev, data_path",
     [
         ([], "HEAD", None, ""),
         (["origin/main"], "origin/main", None, ""),
@@ -16,7 +16,9 @@ from data_cliff.arg_parse import CLIException
         (["origin/main", "HEAD", "some/path"], "origin/main", "HEAD", "some/path"),
     ],
 )
-def test_parse_args(args: list[str], a_rev: str, b_rev: str, data_path: str) -> None:
+def test_parse_args(
+    args: list[str], before_rev: str, after_rev: str, data_path: str
+) -> None:
     # Given
     from data_cliff.arg_parse import _Args, parse_args
 
@@ -25,8 +27,8 @@ def test_parse_args(args: list[str], a_rev: str, b_rev: str, data_path: str) -> 
 
     # Then
     assert isinstance(parsed_args, _Args)
-    assert parsed_args.a_rev == a_rev
-    assert parsed_args.b_rev == b_rev
+    assert parsed_args.before_rev == before_rev
+    assert parsed_args.after_rev == after_rev
     assert parsed_args.data_path == data_path
 
 

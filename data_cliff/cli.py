@@ -11,7 +11,11 @@ def main() -> int:
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        return compare(a_rev=args.a_rev, b_rev=args.b_rev, data_path=args.data_path)
+        return compare(
+            before_rev=args.before_rev,
+            after_rev=args.after_rev,
+            data_path=args.data_path,
+        )
 
 
 if __name__ == "__main__":  # pragma: no cover
