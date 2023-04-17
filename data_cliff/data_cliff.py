@@ -1,10 +1,17 @@
 from difflib import unified_diff
+from enum import Enum
 from hashlib import md5
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Optional
 
 from data_cliff.getter import get_data
+
+
+class FileState(Enum):
+    MODIFIED = 1
+    CREATED = 2
+    DELETED = 3
 
 
 def compare(before_rev: str, after_rev: Optional[str], data_path: str) -> int:
@@ -41,49 +48,59 @@ def _diff_files(before_path: str, after_path: str, data_path: str) -> None:
 
 
 def _diff_file(before_file_path: str, after_file_path: str, file_name: str) -> None:
-    _assert_files_exist(before_file_path, after_file_path)
+    file_status = _assert_files_exist(before_file_path, after_file_path)
     try:
-        _diff_text_file(before_file_path, after_file_path, file_name)
+        _diff_text_file(before_file_path, after_file_path, file_name, file_status)
     except UnicodeDecodeError:
-        _diff_binary_file(before_file_path, after_file_path, file_name)
+        _diff_binary_file(before_file_path, after_file_path, file_name, file_status)
 
 
-def _assert_files_exist(before_file_path: str, after_file_path: str) -> None:
-    _touch_if_does_not_exist(Path(before_file_path))
-    _touch_if_does_not_exist(Path(after_file_path))
+def _assert_files_exist(before_file_path: str, after_file_path: str) -> FileState:
+    if _touch_if_does_not_exist(Path(before_file_path)):
+        return FileState.CREATED
+    elif _touch_if_does_not_exist(Path(after_file_path)):
+        return FileState.DELETED
+    else:
+        return FileState.MODIFIED
 
 
 def _diff_text_file(
-    before_file_path: str, after_file_path: str, file_name: str
+    before_file_path: str, after_file_path: str, file_name: str, file_status: FileState
 ) -> None:
+    null = "/dev/null"
     with open(before_file_path) as a, open(after_file_path) as b:
         diff_list = [
             _format_line(line)
             for line in unified_diff(
                 a.read().splitlines(),
                 b.read().splitlines(),
-                fromfile=f"a/{file_name}",
-                tofile=f"b/{file_name}",
+                fromfile=f"a/{file_name}" if file_status != FileState.CREATED else null,
+                tofile=f"b/{file_name}" if file_status != FileState.DELETED else null,
             )
         ]
 
-        header = _get_header(before_file_path, after_file_path, file_name)
+        header = _get_header(before_file_path, after_file_path, file_name, file_status)
         _display(diff_list, header)
 
 
 def _diff_binary_file(
-    before_file_path: str, after_file_path: str, file_name: str
+    before_file_path: str, after_file_path: str, file_name: str, file_status: FileState
 ) -> None:
+    null = "/dev/null"
     before_hash = _hash_file(before_file_path)
     after_hash = _hash_file(after_file_path)
     if before_hash != after_hash:
-        header = _get_header(before_file_path, after_file_path, file_name)
-        _display([f"Binary files a/{file_name} and b/{file_name} differ"], header)
+        header = _get_header(before_file_path, after_file_path, file_name, file_status)
+        before_file = f"a/{file_name}" if file_status != FileState.CREATED else null
+        after_file = f"b/{file_name}" if file_status != FileState.DELETED else null
+        _display([f"Binary files {before_file} and {after_file} differ"], header)
 
 
-def _touch_if_does_not_exist(file_path: Path) -> None:
+def _touch_if_does_not_exist(file_path: Path) -> bool:
     if not file_path.exists():
         file_path.touch()
+        return True
+    return False
 
 
 def _format_line(line: str) -> str:
@@ -98,12 +115,26 @@ def _format_line(line: str) -> str:
     return line
 
 
-def _get_header(before_path: str, after_path: str, file_name: str) -> str:
-    return (
-        f"cliff a/{file_name} b/{file_name}\n"
-        f"index {_hash_file(before_path)}..{_hash_file(after_path)} "
-        f"{_get_mode(file_name)}"
-    )
+def _get_header(
+    before_path: str, after_path: str, file_name: str, file_status: FileState
+) -> str:
+    if file_status == FileState.MODIFIED:
+        file_status_str = (
+            f"index {_hash_file(before_path)}..{_hash_file(after_path)} "
+            f"{_get_mode(after_path)}"
+        )
+    elif file_status == FileState.CREATED:
+        file_status_str = (
+            f"new file mode {_get_mode(after_path)}\n"
+            f"index 0000000..{_hash_file(after_path)}"
+        )
+    elif file_status == FileState.DELETED:
+        file_status_str = (
+            f"deleted mode {_get_mode(before_path)}\n"
+            f"index {_hash_file(before_path)}..0000000"
+        )
+
+    return f"cliff a/{file_name} b/{file_name}\n{file_status_str}"
 
 
 def _hash_file(file_path: str) -> str:

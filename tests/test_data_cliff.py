@@ -3,6 +3,8 @@ import json
 from pathlib import Path
 from struct import pack
 
+import pytest
+
 
 def test_retrieves_file(dvc_path: Path, tmp_path: Path) -> None:
     # Given
@@ -117,8 +119,43 @@ def test_compare_staged_change_on_folder(
         DVCFileSystem(rev="HEAD").get(str(folder), str(folder.parent), recursive=True)
 
 
+@pytest.mark.parametrize(
+    "before, after, expected_output",
+    [
+        (
+            "HEAD",
+            None,
+            (
+                "cliff a/tests/test_dvc_data/local_data/dir/new_file.txt"
+                " b/tests/test_dvc_data/local_data/dir/new_file.txt\n"
+                "new file mode 100644\nindex 0000000..426d316\n"
+                "--- /dev/null\n"
+                "+++ b/tests/test_dvc_data/local_data/dir/new_file.txt\n"
+                "@@ -0,0 +1 @@\n"
+                "\x1b[92m+new line\x1b[00m\n"
+            ),
+        ),
+        (
+            None,
+            "HEAD",
+            (
+                "cliff a/tests/test_dvc_data/local_data/dir/new_file.txt"
+                " b/tests/test_dvc_data/local_data/dir/new_file.txt\n"
+                "deleted mode 100644\nindex 426d316..0000000\n"
+                "--- a/tests/test_dvc_data/local_data/dir/new_file.txt\n"
+                "+++ /dev/null\n"
+                "@@ -1 +0,0 @@\n"
+                "\x1b[91m-new line\x1b[00m\n"
+            ),
+        ),
+    ],
+)
 def test_compare_staged_change_on_new_file(
-    dvc_path: Path, captured_print: io.StringIO
+    before: str,
+    after: str,
+    expected_output: str,
+    dvc_path: Path,
+    captured_print: io.StringIO,
 ) -> None:
     # Given
 
@@ -129,19 +166,9 @@ def test_compare_staged_change_on_new_file(
     new_file.touch()
     _add_line_to_file(new_file)
 
-    expected_output = (
-        "cliff a/tests/test_dvc_data/local_data/dir/new_file.txt"
-        " b/tests/test_dvc_data/local_data/dir/new_file.txt\n"
-        "index d41d8cd..426d316 100644\n"
-        "--- a/tests/test_dvc_data/local_data/dir/new_file.txt\n"
-        "+++ b/tests/test_dvc_data/local_data/dir/new_file.txt\n"
-        "@@ -0,0 +1 @@\n"
-        "\x1b[92m+new line\x1b[00m\n"
-    )
-
     try:
         # When
-        compare("HEAD", None, str(folder))
+        compare(before, after, str(folder))
 
         # Then
         assert captured_print.getvalue() == expected_output
