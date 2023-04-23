@@ -3,8 +3,36 @@ import json
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
 
-def test_main(dvc_path, captured_print: io.StringIO) -> None:
+
+@pytest.mark.parametrize(
+    "initial_args, expected_output",
+    [
+        (
+            ["cliff"],
+            (
+                "cliff a/tests/test_dvc_data/local_data/dir/file.json"
+                " b/tests/test_dvc_data/local_data/dir/file.json\n"
+                "index 612420a..db800ff 100644\n"
+                "--- a/tests/test_dvc_data/local_data/dir/file.json\n"
+                "+++ b/tests/test_dvc_data/local_data/dir/file.json\n"
+                "@@ -1,3 +1,4 @@\n"
+                " {\n"
+                '\x1b[91m-    "test": "file"\x1b[00m\n'
+                '\x1b[92m+    "test": "file",\x1b[00m\n'
+                '\x1b[92m+    "new_key": "new_value"\x1b[00m\n'
+                " }\n"
+            ),
+        ),
+    ],
+)
+def test_main(
+    initial_args: list[str],
+    expected_output: str,
+    dvc_path: Path,
+    captured_print: io.StringIO,
+) -> None:
     # Given
     import sys
 
@@ -13,22 +41,8 @@ def test_main(dvc_path, captured_print: io.StringIO) -> None:
     from data_cliff.cli import main
 
     file = dvc_path / "dir" / "file.json"
-    test_args = ["cliff", str(file)]
+    test_args = initial_args + [str(file)]
     _add_line_to_path(file)
-
-    expected_output = (
-        "cliff a/tests/test_dvc_data/local_data/dir/file.json"
-        " b/tests/test_dvc_data/local_data/dir/file.json\n"
-        "index 612420a..db800ff 100644\n"
-        "--- a/tests/test_dvc_data/local_data/dir/file.json\n"
-        "+++ b/tests/test_dvc_data/local_data/dir/file.json\n"
-        "@@ -1,3 +1,4 @@\n"
-        " {\n"
-        '\x1b[91m-    "test": "file"\x1b[00m\n'
-        '\x1b[92m+    "test": "file",\x1b[00m\n'
-        '\x1b[92m+    "new_key": "new_value"\x1b[00m\n'
-        " }\n"
-    )
 
     # When
     with patch.object(sys, "argv", test_args):
