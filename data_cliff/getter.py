@@ -26,6 +26,7 @@ def get_from_workdir(data_path: str, local_path: str) -> bool:
     return False
 
 
+# pygit2.Repository(".").status()
 def _is_directory(fs: DVCFileSystem, data_path: str) -> bool:
     is_directory: bool = fs.info(str(data_path))["type"] == "directory"
     return is_directory
