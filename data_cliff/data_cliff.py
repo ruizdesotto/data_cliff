@@ -34,6 +34,9 @@ def _diff_files(before_path: str, after_path: str, data_path: str) -> None:
             after_file_path=after_path,
             file_name=data_path,
         )
+    _create_if_does_not_exist(Path(before_path))
+    _create_if_does_not_exist(Path(after_path))
+
     files = set(
         file.relative_to(x_path)
         for x_path in [before_path, after_path]
@@ -99,6 +102,13 @@ def _diff_binary_file(
 def _touch_if_does_not_exist(file_path: Path) -> bool:
     if not file_path.exists():
         file_path.touch()
+        return True
+    return False
+
+
+def _create_if_does_not_exist(file_path: Path) -> bool:
+    if not file_path.exists():
+        file_path.mkdir()
         return True
     return False
 
